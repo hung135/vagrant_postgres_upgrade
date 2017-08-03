@@ -62,6 +62,7 @@ Vagrant.configure("2") do |config|
   # such as FTP and Heroku are also available. See the documentation at
   # https://docs.vagrantup.com/v2/push/atlas.html for more information.
   # config.push.define "atlas" do |push|
+  #
   #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
   # end
 
@@ -84,6 +85,7 @@ wget https://get.enterprisedb.com/postgresql/postgresql-9.6.3-3-linux-x64.run
 	
 #apt-get install postgres-xc-client -y 
 mkdir /var/lock/subsys
+chown -R postgres:postgres /opt/PostgreSQL *
 ./postgresql-9.6.3-3-linux-x64.run --mode unattended --superpassword postgres --serverport 5432
 ./postgresql-9.5.7-1-linux-x64.run --mode unattended --superpassword postgres --serverport 5433
 /etc/init.d/postgresql-9.5 stop
