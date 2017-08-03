@@ -69,23 +69,28 @@ Vagrant.configure("2") do |config|
   # Enable provisioning with a shell script. Additional provisioners such as
   # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
   # documentation for more information about their specific syntax and use.
-   config.vm.provision "shell", inline: <<-SHELL
-add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main"
-wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
-wget https://get.enterprisedb.com/postgresql/postgresql-9.5.7-1-linux-x64.run
-wget https://get.enterprisedb.com/postgresql/postgresql-9.6.3-3-linux-x64.run
+   config.vm.provision "download", type: "shell" do |s|
+    s.inline = "wget https://get.enterprisedb.com/postgresql/postgresql-9.6.3-3-linux-x64.run"
+    s.inline = "wget https://get.enterprisedb.com/postgresql/postgresql-9.5.7-1-linux-x64.run"
+  end
+ 
+ 
+	config.vm.provision "shell", inline: <<-SHELL
+  add-apt-repository "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main"
+  wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+ 
+
+
      apt-get update
      apt-get upgrade -y
      #apt-get install -y postgresql postgresql-contrib
      apt-get install -y postgresql-client-common postgresql-client-9.6 vim fish
-     
-     
-     
-    chmod 777 *
+
+    chmod 777 postgresql-9.*
 	
 #apt-get install postgres-xc-client -y 
 mkdir /var/lock/subsys
-chown -R postgres:postgres /opt/PostgreSQL *
+chown -R vagrant:vagrant /opt/PostgreSQL/ *
 ./postgresql-9.6.3-3-linux-x64.run --mode unattended --superpassword postgres --serverport 5432
 ./postgresql-9.5.7-1-linux-x64.run --mode unattended --superpassword postgres --serverport 5433
 /etc/init.d/postgresql-9.5 stop
