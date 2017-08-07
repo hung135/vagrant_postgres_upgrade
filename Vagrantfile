@@ -29,7 +29,9 @@ Vagrant.configure("2") do |config|
   #config.vm.provision "download2", type: "shell", inline: $download2, run: "once"
 config.vm.provision "file", source: "postgresql-9.5.7-1-linux-x64.run", destination: "postgresql-9.5.7-1-linux-x64.run"
 config.vm.provision "file", source: "postgresql-9.6.3-3-linux-x64.run", destination: "postgresql-9.6.3-3-linux-x64.run"
-config.vm.provision "download2", type: "shell", inline: $setup, run: "once"
+config.vm.provision "file", source: "Sample-SQL-File-100000rows.sql", destination: "Sample-SQL-File.sql"
+config.vm.provision "setup", type: "shell", inline: $setup, run: "once"
+
 end
 
 
@@ -38,6 +40,7 @@ end
  SCRIPT
   $download2 = <<-SCRIPT
  	wget https://get.enterprisedb.com/postgresql/postgresql-9.6.3-3-linux-x64.run
+  http://www.sample-videos.com/sql/Sample-SQL-File-100000rows.sql
  SCRIPT
 
 $setup = <<-SHELL
@@ -70,12 +73,17 @@ echo "host all all 192.168.33.100/24 md5" >>/opt/PostgreSQL/9.6/data/pg_hba.conf
 echo export PGUSER=postgres >>.profile
 echo export PGPASSWORD=postgres >>.profile
 echo export PGDATABASE=postgres >>.profile
-echo export PGHOST=192.168.33.100 >>.profile
+echo export PGHOST=localhost >>.profile
 echo export PGBINNEW=/opt/PostgreSQL/9.6/bin >>.profile
 echo export PGBINOLD=/opt/PostgreSQL/9.5/bin >>.profile
 echo export PGDATAOLD=/opt/PostgreSQL/9.5/data >>.profile
 echo export PGDATANEW=/opt/PostgreSQL/9.6/data >>.profile
 echo export PATH=$PATH:/opt/PostgreSQL/9.6/bin >>.profile
+
+ 
+
+
+
 
 /etc/init.d/postgresql-9.5 start
 /etc/init.d/postgresql-9.6 start
@@ -91,6 +99,21 @@ sudo echo "create mask = 0770">>/etc/samba/smb.conf
 sudo echo "force create mode = 0770">>/etc/samba/smb.conf
 sudo echo "locking = yes">>/etc/samba/smb.conf
 sudo service smbd restart 
+
+echo "cd /tmp
+sudo -H -u postgres /opt/PostgreSQL/9.6/bin/pg_upgrade \
+   -b /opt/PostgreSQL/9.5/bin \
+   -B /opt/PostgreSQL/9.6/bin \
+   -d /opt/PostgreSQL/9.5/data \
+   -D /opt/PostgreSQL/9.6/data \
+   -o ' -c config_file=/etc/postgresql/9.5/data/pg_hba.conf' \
+   -O ' -c config_file=/etc/postgresql/9.6/data/pg_hba.conf'" >upgrade.sh
+
+#sudo chown -R vagrant:vagrant /opt/PostgreSQL/
+#sudo chown -R vagrant:vagrant /opt/PostgreSQL/
+
+echo "postgres:postgres" | sudo chpasswd
+#sudo chown -R vagrant:vagrant /opt/PostgreSQL/
 SHELL
 
  
