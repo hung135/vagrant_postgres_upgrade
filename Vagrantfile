@@ -29,7 +29,9 @@ Vagrant.configure("2") do |config|
   #config.vm.provision "download2", type: "shell", inline: $download2, run: "once"
 config.vm.provision "file", source: "postgresql-9.5.7-1-linux-x64.run", destination: "postgresql-9.5.7-1-linux-x64.run"
 config.vm.provision "file", source: "postgresql-9.6.3-3-linux-x64.run", destination: "postgresql-9.6.3-3-linux-x64.run"
-config.vm.provision "file", source: "Sample-SQL-File-100000rows.sql", destination: "Sample-SQL-File.sql"
+config.vm.provision "file", source: "Sample-SQL-File-1000000rows.sql", destination: "Sample-SQL-File.sql"
+config.vm.provision "file", source: "createdb.sql", destination: "createdb.sql"
+config.vm.provision "file", source: "createtable.sql", destination: "createtable.sql"
 config.vm.provision "setup", type: "shell", inline: $setup, run: "once"
 
 end
@@ -113,7 +115,7 @@ sudo -H -u postgres /opt/PostgreSQL/9.6/bin/pg_upgrade \
 #sudo chown -R vagrant:vagrant /opt/PostgreSQL/
 
 echo "postgres:postgres" | sudo chpasswd
-#sudo chown -R vagrant:vagrant /opt/PostgreSQL/
+#sudo chown -R ubuntu:ubuntu /opt/PostgreSQL/
 SHELL
 
  
